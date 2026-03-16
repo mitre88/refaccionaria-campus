@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { LoginForm } from "@/components/LoginForm";
 import { Dashboard } from "@/components/Dashboard";
+import { ToastContainer } from "@/components/Toast";
 
 export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -18,9 +19,14 @@ export default function Home() {
     setUser("");
   }
 
-  if (!isLoggedIn) {
-    return <LoginForm onLogin={handleLogin} />;
-  }
-
-  return <Dashboard user={user} onLogout={handleLogout} />;
+  return (
+    <>
+      <ToastContainer />
+      {!isLoggedIn ? (
+        <LoginForm onLogin={handleLogin} />
+      ) : (
+        <Dashboard user={user} onLogout={handleLogout} />
+      )}
+    </>
+  );
 }
