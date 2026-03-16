@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { ThemeToggle } from "./ThemeToggle";
 import { showToast } from "./Toast";
 
 export function LoginForm({ onLogin }: { onLogin: (user: string) => void }) {
@@ -21,10 +20,10 @@ export function LoginForm({ onLogin }: { onLogin: (user: string) => void }) {
       });
       const data = await res.json();
       if (data.ok) {
-        showToast("Bienvenido", "success");
-        setTimeout(() => onLogin(data.user), 300);
+        showToast("Bienvenido, " + data.user, "success");
+        setTimeout(() => onLogin(data.user), 400);
       } else {
-        showToast("Credenciales incorrectas", "error");
+        showToast("Usuario o contrasena incorrectos", "error");
         setShake(true);
         setTimeout(() => setShake(false), 600);
       }
@@ -36,80 +35,52 @@ export function LoginForm({ onLogin }: { onLogin: (user: string) => void }) {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-5" style={{ background: "var(--bg-0)" }}>
-      <div className="absolute top-4 right-4"><ThemeToggle /></div>
+    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
+      {/* Background */}
+      <div className="login-bg" />
 
-      <div className={`w-full max-w-[400px] anim-enter ${shake ? "anim-shake" : ""}`}>
-        {/* Brand */}
-        <div className="text-center mb-12">
-          <div
-            className="w-24 h-24 rounded-3xl flex items-center justify-center mx-auto mb-6"
-            style={{
-              background: "var(--accent-soft)",
-              boxShadow: "var(--shadow-glow)",
-              transition: "all 0.5s cubic-bezier(0.16, 1, 0.3, 1)",
-            }}
-          >
-            <svg width={44} height={44} fill="none" viewBox="0 0 24 24" stroke="var(--accent)" strokeWidth={1.3}>
+      <div className={`anim-enter ${shake ? "anim-shake" : ""}`} style={{ position: "relative", zIndex: 1, width: "100%", maxWidth: 420, padding: "0 20px" }}>
+        {/* Card */}
+        <div className="fb-card" style={{ padding: "40px 32px 32px", textAlign: "center" }}>
+          {/* Logo */}
+          <div style={{
+            width: 72, height: 72, borderRadius: 20, margin: "0 auto 20px",
+            background: "var(--accent)", display: "flex", alignItems: "center", justifyContent: "center",
+            boxShadow: "0 8px 24px rgba(194, 113, 21, 0.3)",
+          }}>
+            <svg width={36} height={36} fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth={1.4}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437l1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008z" />
             </svg>
           </div>
-          <h1 style={{ fontSize: "clamp(28px, 5vw, 34px)", fontWeight: 700, letterSpacing: "-0.025em", color: "var(--text-0)" }}>
+
+          <h1 style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.02em", color: "var(--text-0)", marginBottom: 4 }}>
             Refaccionaria Campos
           </h1>
-          <p style={{ fontSize: 17, color: "var(--text-2)", marginTop: 6, fontWeight: 400 }}>
-            Panel de gestion
+          <p style={{ fontSize: 16, color: "var(--text-2)", marginBottom: 28 }}>
+            Inicia sesion para acceder al panel
           </p>
+
+          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+            <input
+              type="text" value={username} onChange={(e) => setUsername(e.target.value)}
+              className="input" placeholder="Usuario" required autoComplete="username"
+              style={{ borderRadius: "var(--radius)", background: "var(--bg-2)", border: "1px solid var(--border-subtle)", padding: "16px", fontSize: 17 }}
+            />
+            <input
+              type="password" value={password} onChange={(e) => setPassword(e.target.value)}
+              className="input" placeholder="Contrasena" required autoComplete="current-password"
+              style={{ borderRadius: "var(--radius)", background: "var(--bg-2)", border: "1px solid var(--border-subtle)", padding: "16px", fontSize: 17 }}
+            />
+            <button
+              type="submit" disabled={loading} className="btn btn-primary"
+              style={{ width: "100%", height: 52, fontSize: 17, borderRadius: "var(--radius)", marginTop: 4, opacity: loading ? 0.7 : 1 }}
+            >
+              {loading ? "Verificando..." : "Iniciar sesion"}
+            </button>
+          </form>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="card" style={{ padding: "32px" }}>
-          <div style={{ marginBottom: 20 }}>
-            <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "var(--text-2)", marginBottom: 8 }}>
-              Usuario
-            </label>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="input"
-              placeholder="Tu usuario"
-              required
-              autoComplete="username"
-            />
-          </div>
-          <div style={{ marginBottom: 28 }}>
-            <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "var(--text-2)", marginBottom: 8 }}>
-              Contrasena
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="input"
-              placeholder="Tu contrasena"
-              required
-              autoComplete="current-password"
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={loading}
-            className="btn btn-primary"
-            style={{ width: "100%", height: 52, fontSize: 16, opacity: loading ? 0.7 : 1 }}
-          >
-            {loading ? (
-              <span className="flex items-center gap-2">
-                <svg width={18} height={18} viewBox="0 0 24 24" fill="none" className="animate-spin">
-                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeDasharray="31.4" strokeDashoffset="10" />
-                </svg>
-                Verificando...
-              </span>
-            ) : "Iniciar sesion"}
-          </button>
-        </form>
-
-        <p className="text-center" style={{ marginTop: 32, fontSize: 13, color: "var(--text-3)", letterSpacing: "0.05em", fontWeight: 500 }}>
+        <p style={{ textAlign: "center", marginTop: 24, fontSize: 13, color: "rgba(255,255,255,0.5)", fontWeight: 500, letterSpacing: "0.04em" }}>
           CAMPOS HERRAMIENTAS AUTOMOTRICES
         </p>
       </div>

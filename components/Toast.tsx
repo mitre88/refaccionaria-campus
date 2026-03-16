@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 interface ToastItem {
   id: string;
   message: string;
   type: "success" | "error" | "info";
+  exiting?: boolean;
 }
 
 let listeners: ((t: ToastItem) => void)[] = [];
@@ -14,16 +15,28 @@ export function showToast(message: string, type: ToastItem["type"] = "info") {
   listeners.forEach((fn) => fn({ id: Date.now().toString(), message, type }));
 }
 
-const iconPaths: Record<string, string> = {
-  success: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z",
-  error: "M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z",
-  info: "M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z",
-};
-
-const iconColors: Record<string, string> = {
-  success: "var(--green)",
-  error: "var(--red)",
-  info: "var(--accent)",
+const icons: Record<string, ReactNode> = {
+  success: (
+    <div style={{ width: 36, height: 36, borderRadius: "50%", background: "var(--green)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <svg width={18} height={18} fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth={2.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+      </svg>
+    </div>
+  ),
+  error: (
+    <div style={{ width: 36, height: 36, borderRadius: "50%", background: "var(--red)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <svg width={18} height={18} fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth={2.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </div>
+  ),
+  info: (
+    <div style={{ width: 36, height: 36, borderRadius: "50%", background: "var(--accent)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <svg width={18} height={18} fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth={2.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    </div>
+  ),
 };
 
 export function ToastContainer() {
@@ -32,7 +45,10 @@ export function ToastContainer() {
   useEffect(() => {
     const handler = (t: ToastItem) => {
       setToasts((p) => [...p.slice(-2), t]);
-      setTimeout(() => setToasts((p) => p.filter((x) => x.id !== t.id)), 3000);
+      setTimeout(() => {
+        setToasts((p) => p.map((x) => x.id === t.id ? { ...x, exiting: true } : x));
+        setTimeout(() => setToasts((p) => p.filter((x) => x.id !== t.id)), 300);
+      }, 3000);
     };
     listeners.push(handler);
     return () => { listeners = listeners.filter((fn) => fn !== handler); };
@@ -41,21 +57,35 @@ export function ToastContainer() {
   if (!toasts.length) return null;
 
   return (
-    <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-[200] flex flex-col items-center gap-2 pointer-events-none" style={{ maxWidth: "90vw" }}>
+    <div style={{ position: "fixed", top: 16, right: 16, zIndex: 9999, display: "flex", flexDirection: "column", gap: 10, maxWidth: 380 }}>
       {toasts.map((t) => (
         <div
           key={t.id}
-          className="anim-toast pointer-events-auto flex items-center gap-2.5 px-5 py-3 rounded-2xl"
           style={{
-            background: "var(--bg-1)",
-            border: "1px solid var(--border)",
+            display: "flex", alignItems: "center", gap: 12,
+            padding: "12px 16px 12px 12px",
+            background: "var(--notif-bg)",
+            border: "1px solid var(--notif-border)",
+            borderRadius: 12,
             boxShadow: "var(--shadow-lg)",
+            animation: t.exiting ? "notif-out 0.3s cubic-bezier(0.16, 1, 0.3, 1) both" : "notif-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both",
+            overflow: "hidden",
+            position: "relative",
           }}
         >
-          <svg width={18} height={18} fill="none" viewBox="0 0 24 24" stroke={iconColors[t.type]} strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d={iconPaths[t.type]} />
-          </svg>
-          <span style={{ color: "var(--text-0)", fontSize: 15, fontWeight: 500 }}>{t.message}</span>
+          {icons[t.type]}
+          <div style={{ flex: 1 }}>
+            <span style={{ fontSize: 15, fontWeight: 600, color: "var(--text-0)" }}>{t.message}</span>
+          </div>
+          {/* Progress bar */}
+          {!t.exiting && (
+            <div style={{
+              position: "absolute", bottom: 0, left: 0, height: 3,
+              background: t.type === "success" ? "var(--green)" : t.type === "error" ? "var(--red)" : "var(--accent)",
+              animation: "progress 3s linear both",
+              borderRadius: "0 0 12px 12px",
+            }} />
+          )}
         </div>
       ))}
     </div>

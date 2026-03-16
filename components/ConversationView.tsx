@@ -16,15 +16,8 @@ interface Message {
 
 function formatTime(ts: string): string {
   try {
-    return new Date(ts).toLocaleString("es-MX", {
-      day: "2-digit",
-      month: "short",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  } catch {
-    return ts;
-  }
+    return new Date(ts).toLocaleString("es-MX", { hour: "2-digit", minute: "2-digit" });
+  } catch { return ts; }
 }
 
 function formatPhone(phone: string): string {
@@ -39,60 +32,45 @@ export function ConversationView({
   messages,
   contactName,
   contactPhone,
+  avatarColor,
   onBack,
 }: {
   messages: Message[];
   contactName: string;
   contactPhone: string;
+  avatarColor: string;
   onBack: () => void;
 }) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
+    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages]);
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: "var(--bg-0)" }}>
+    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "var(--bg-0)" }}>
       {/* Header */}
-      <header className="header-blur sticky top-0 z-50">
-        <div className="max-w-3xl mx-auto px-4 py-3 flex items-center gap-3">
-          <button
-            onClick={onBack}
-            className="btn btn-surface"
-            style={{ width: 38, height: 38 }}
-          >
-            <svg width={18} height={18} fill="none" viewBox="0 0 24 24" stroke="var(--text-0)" strokeWidth={2.2}>
+      <header className="header-blur" style={{ position: "sticky", top: 0, zIndex: 50 }}>
+        <div style={{ maxWidth: 800, margin: "0 auto", padding: "10px 16px", display: "flex", alignItems: "center", gap: 10 }}>
+          <button onClick={onBack} className="btn btn-ghost" style={{ width: 40, height: 40, borderRadius: "50%" }}>
+            <svg width={20} height={20} fill="none" viewBox="0 0 24 24" stroke="var(--text-0)" strokeWidth={2.2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-
-          {/* Contact info */}
-          <div
-            style={{
-              width: 42,
-              height: 42,
-              borderRadius: "50%",
-              background: "var(--accent-soft)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexShrink: 0,
-              fontSize: 18,
-              fontWeight: 700,
-              color: "var(--accent)",
-            }}
-          >
+          <div style={{
+            width: 44, height: 44, borderRadius: "50%", flexShrink: 0,
+            background: avatarColor,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 19, fontWeight: 700, color: "#fff",
+          }}>
             {contactName.charAt(0).toUpperCase()}
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <h1 style={{ fontSize: 17, fontWeight: 700, letterSpacing: "-0.01em", color: "var(--text-0)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            <p style={{ fontSize: 17, fontWeight: 700, color: "var(--text-0)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
               {contactName}
-            </h1>
-            <p style={{ fontSize: 13, color: "var(--text-3)", fontFamily: "monospace" }}>
-              {formatPhone(contactPhone)} · {messages.length} msgs
+            </p>
+            <p style={{ fontSize: 13, color: "var(--text-3)", fontFamily: "'SF Mono', monospace" }}>
+              {formatPhone(contactPhone)}
             </p>
           </div>
           <ThemeToggle />
@@ -102,73 +80,58 @@ export function ConversationView({
       {/* Messages */}
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto scroll-thin"
-        style={{ padding: "20px 16px" }}
+        className="scroll-thin"
+        style={{ flex: 1, overflowY: "auto", padding: "20px 16px" }}
       >
-        <div className="max-w-3xl mx-auto">
+        <div style={{ maxWidth: 800, margin: "0 auto" }}>
           {messages.length === 0 && (
             <div className="anim-enter" style={{ textAlign: "center", padding: "80px 0" }}>
-              <p style={{ fontSize: 16, fontWeight: 600, color: "var(--text-1)" }}>Sin mensajes</p>
-              <p style={{ fontSize: 14, color: "var(--text-3)", marginTop: 4 }}>
-                No hay conversaciones con este contacto
-              </p>
+              <div style={{
+                width: 64, height: 64, borderRadius: "50%", margin: "0 auto 16px",
+                background: avatarColor, display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 28, fontWeight: 700, color: "#fff",
+              }}>
+                {contactName.charAt(0).toUpperCase()}
+              </div>
+              <p style={{ fontSize: 18, fontWeight: 600, color: "var(--text-1)" }}>{contactName}</p>
+              <p style={{ fontSize: 15, color: "var(--text-3)", marginTop: 4 }}>Sin mensajes en esta conversacion</p>
             </div>
           )}
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
             {messages.map((msg, i) => {
               const isUser = msg.role === "user";
-              const prevMsg = i > 0 ? messages[i - 1] : null;
-              const showDate = !prevMsg || new Date(msg.timestamp).toDateString() !== new Date(prevMsg.timestamp).toDateString();
+              const prev = i > 0 ? messages[i - 1] : null;
+              const showDate = !prev || new Date(msg.timestamp).toDateString() !== new Date(prev.timestamp).toDateString();
 
               return (
                 <div key={msg.id}>
                   {showDate && (
-                    <div style={{ textAlign: "center", padding: "16px 0 8px" }}>
-                      <span
-                        style={{
-                          fontSize: 12,
-                          fontWeight: 600,
-                          color: "var(--text-3)",
-                          background: "var(--bg-2)",
-                          padding: "4px 14px",
-                          borderRadius: 20,
-                        }}
-                      >
-                        {new Date(msg.timestamp).toLocaleDateString("es-MX", {
-                          weekday: "short",
-                          day: "numeric",
-                          month: "short",
-                        })}
+                    <div style={{ textAlign: "center", padding: "20px 0 10px" }}>
+                      <span style={{
+                        fontSize: 13, fontWeight: 600, color: "var(--text-3)",
+                        background: "var(--bg-2)", padding: "5px 16px", borderRadius: 20,
+                      }}>
+                        {new Date(msg.timestamp).toLocaleDateString("es-MX", { weekday: "long", day: "numeric", month: "long" })}
                       </span>
                     </div>
                   )}
 
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: isUser ? "flex-end" : "flex-start",
-                      alignItems: "flex-end",
-                      gap: 8,
-                    }}
-                  >
+                  <div style={{
+                    display: "flex",
+                    justifyContent: isUser ? "flex-end" : "flex-start",
+                    alignItems: "flex-end",
+                    gap: 8,
+                    marginBottom: 2,
+                  }}>
                     {/* Bot avatar */}
                     {!isUser && (
-                      <div
-                        style={{
-                          width: 28,
-                          height: 28,
-                          borderRadius: "50%",
-                          background: "var(--accent-soft)",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          flexShrink: 0,
-                          fontSize: 12,
-                          fontWeight: 700,
-                          color: "var(--accent)",
-                        }}
-                      >
+                      <div style={{
+                        width: 32, height: 32, borderRadius: "50%", flexShrink: 0,
+                        background: "linear-gradient(135deg, var(--accent), var(--accent-hover))",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        fontSize: 14, fontWeight: 700, color: "#fff",
+                      }}>
                         C
                       </div>
                     )}
@@ -176,24 +139,34 @@ export function ConversationView({
                     <div
                       className={isUser ? "bubble-in" : "bubble-out"}
                       style={{
-                        maxWidth: "78%",
-                        padding: "12px 16px",
-                        fontSize: 15,
-                        lineHeight: 1.55,
+                        maxWidth: "75%",
+                        padding: "14px 18px",
                       }}
                     >
-                      <div style={{ whiteSpace: "pre-wrap" }}>
+                      <div style={{
+                        fontSize: 18,
+                        lineHeight: 1.55,
+                        whiteSpace: "pre-wrap",
+                        wordBreak: "break-word",
+                      }}>
                         {msg.displayText || msg.content}
                       </div>
-                      <div style={{
-                        fontSize: 11,
-                        marginTop: 6,
-                        textAlign: "right",
-                        opacity: 0.45,
-                      }}>
+                      <div style={{ fontSize: 12, marginTop: 8, textAlign: "right", opacity: 0.5 }}>
                         {formatTime(msg.timestamp)}
                       </div>
                     </div>
+
+                    {/* User avatar */}
+                    {isUser && (
+                      <div style={{
+                        width: 32, height: 32, borderRadius: "50%", flexShrink: 0,
+                        background: avatarColor,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        fontSize: 14, fontWeight: 700, color: "#fff",
+                      }}>
+                        {contactName.charAt(0).toUpperCase()}
+                      </div>
+                    )}
                   </div>
                 </div>
               );
