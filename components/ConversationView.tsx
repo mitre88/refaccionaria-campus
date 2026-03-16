@@ -125,12 +125,11 @@ export function ConversationView({
                   >
                     {/* Bot avatar */}
                     {!isUser && (
-                      <div
-                        className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold text-white"
-                        style={{ background: "linear-gradient(135deg, var(--accent), var(--accent-hover))" }}
-                      >
-                        C
-                      </div>
+                      <img
+                        src="/campitos-avatar.png"
+                        alt="Campitos"
+                        className="h-8 w-8 flex-shrink-0 rounded-full object-cover"
+                      />
                     )}
 
                     <div

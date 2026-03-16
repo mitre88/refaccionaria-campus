@@ -67,11 +67,7 @@ export function Dashboard({ user, onLogout }: { user: string; onLogout: () => vo
         <div className="mx-auto flex h-[60px] max-w-[1080px] items-center justify-between px-5">
           <div className="flex items-center gap-3">
             {/* Logo */}
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl" style={{ background: "var(--primary)" }}>
-              <svg width={20} height={20} fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth={1.6}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085" />
-              </svg>
-            </div>
+            <img src="/campitos-avatar.png" alt="Campitos" className="h-10 w-10 rounded-xl object-cover" />
             <div>
               <span className="text-[17px] font-bold" style={{ color: "var(--text-0)" }}>Refaccionaria Campos</span>
               <span className="ml-2 hidden rounded-full px-2.5 py-0.5 text-[11px] font-bold sm:inline-block" style={{ background: "var(--primary-soft)", color: "var(--primary)" }}>
@@ -230,12 +226,12 @@ export function Dashboard({ user, onLogout }: { user: string; onLogout: () => vo
                       <div className="flex items-center gap-6 p-8">
                         {/* Avatar */}
                         <div className="relative flex-shrink-0">
-                          <div
-                            className="flex h-20 w-20 items-center justify-center rounded-2xl text-4xl font-extrabold text-white"
-                            style={{ background: "linear-gradient(135deg, var(--primary), #42b72a)", boxShadow: "0 4px 20px rgba(24,119,242,0.25)" }}
-                          >
-                            C
-                          </div>
+                          <img
+                            src="/campitos-avatar.png"
+                            alt="Campitos"
+                            className="h-20 w-20 rounded-2xl object-cover"
+                            style={{ boxShadow: "0 4px 20px rgba(24,119,242,0.25)" }}
+                          />
                           {online && (
                             <div className="live-dot absolute -bottom-1 -right-1" style={{ border: "3px solid var(--bg-1)", width: 18, height: 18 }} />
                           )}

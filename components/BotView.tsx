@@ -161,12 +161,11 @@ export function BotView({
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          <div
-            className="flex h-11 w-11 items-center justify-center rounded-[14px] text-xl font-extrabold text-white"
-            style={{ background: "linear-gradient(135deg, var(--accent), var(--accent-hover))" }}
-          >
-            C
-          </div>
+          <img
+            src="/campitos-avatar.png"
+            alt="Campitos"
+            className="h-11 w-11 rounded-[14px] object-cover"
+          />
           <div className="flex-1">
             <span className="text-lg font-bold" style={{ color: "var(--text-0)" }}>{botName}</span>
             <p className="text-[13px]" style={{ color: "var(--text-3)" }}>{contacts.length} conversaciones</p>
