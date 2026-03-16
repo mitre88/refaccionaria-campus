@@ -51,7 +51,7 @@ export function Dashboard({ user, onLogout }: { user: string; onLogout: () => vo
 
   useEffect(() => {
     fetchBots();
-    const i = setInterval(fetchBots, 30000);
+    const i = setInterval(fetchBots, 15000);
     return () => clearInterval(i);
   }, [fetchBots]);
 

@@ -83,6 +83,7 @@ export function BotView({
   const [selectedPhone, setSelectedPhone] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
 
   const fetchData = useCallback(async () => {
     try {
@@ -106,10 +107,10 @@ export function BotView({
           }
         }
         setContacts(Array.from(map.values()).sort((a, b) => new Date(b.lastTimestamp).getTime() - new Date(a.lastTimestamp).getTime()));
-        if (!loading) showToast("Conversaciones actualizadas", "success");
+        setLastUpdate(new Date());
       }
     } catch {
-      showToast("Error cargando conversaciones", "error");
+      if (!loading) showToast("Error cargando conversaciones", "error");
     } finally {
       setLoading(false);
     }
@@ -117,7 +118,7 @@ export function BotView({
 
   useEffect(() => {
     fetchData();
-    const i = setInterval(fetchData, 25000);
+    const i = setInterval(fetchData, 8000);
     return () => clearInterval(i);
   }, []);// eslint-disable-line react-hooks/exhaustive-deps
 
@@ -168,7 +169,13 @@ export function BotView({
           />
           <div className="flex-1">
             <span className="text-lg font-bold" style={{ color: "var(--text-0)" }}>{botName}</span>
-            <p className="text-[13px]" style={{ color: "var(--text-3)" }}>{contacts.length} conversaciones</p>
+            <div className="flex items-center gap-2">
+              <p className="text-[13px]" style={{ color: "var(--text-3)" }}>{contacts.length} conversaciones</p>
+              <span className="flex items-center gap-1 text-[11px] font-semibold" style={{ color: "var(--green)" }}>
+                <span className="live-dot" style={{ width: 6, height: 6 }} />
+                En vivo
+              </span>
+            </div>
           </div>
           <ThemeToggle />
         </div>
