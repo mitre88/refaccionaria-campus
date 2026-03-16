@@ -34,7 +34,9 @@ export function ShimmerButton({
       style={{
         borderRadius,
         background,
-        boxShadow: "0 4px 20px rgba(194,113,21,0.3)",
+        boxShadow: background?.toString().includes("1877F2") || background?.toString().includes("primary")
+          ? "0 4px 20px rgba(24,119,242,0.3)"
+          : "0 4px 20px rgba(0,0,0,0.15)",
       }}
       {...props}
     >
