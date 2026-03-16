@@ -104,6 +104,9 @@ body {
 @keyframes notif-in { from { opacity:0; transform:translateX(40px) scale(0.95); } to { opacity:1; transform:translateX(0) scale(1); } }
 @keyframes notif-out { from { opacity:1; transform:translateX(0); } to { opacity:0; transform:translateX(40px); } }
 @keyframes progress { from { width:100%; } to { width:0%; } }
+@keyframes toast-enter { from { opacity:0; transform:translateX(60px) scale(0.9); filter:blur(4px); } to { opacity:1; transform:translateX(0) scale(1); filter:blur(0); } }
+@keyframes toast-exit { from { opacity:1; transform:translateX(0) scale(1); } to { opacity:0; transform:translateX(80px) scale(0.85); filter:blur(2px); } }
+@keyframes toast-progress { from { width:100%; } to { width:0%; } }
 
 .anim-enter { animation: enter 0.45s var(--ease) both; }
 .anim-enter-scale { animation: enter-scale 0.35s var(--ease) both; }
@@ -186,18 +189,45 @@ body {
 .scroll-thin::-webkit-scrollbar-track { background:transparent; }
 .scroll-thin::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px; }
 
-/* ─── Login background pattern ─── */
+/* ─── Login background — industrial/automotive ─── */
 .login-bg {
   position: fixed; inset: 0; z-index: 0;
-  background: var(--login-gradient);
+  background: #1a1a1a;
+  overflow: hidden;
 }
 .login-bg::before {
   content: ''; position: absolute; inset: 0;
-  background: radial-gradient(circle at 20% 80%, rgba(255,255,255,0.08) 0%, transparent 50%),
-              radial-gradient(circle at 80% 20%, rgba(255,255,255,0.06) 0%, transparent 50%),
-              radial-gradient(circle at 50% 50%, rgba(0,0,0,0.1) 0%, transparent 70%);
+  background:
+    radial-gradient(ellipse 120% 80% at 20% 100%, rgba(194,113,21,0.25) 0%, transparent 60%),
+    radial-gradient(ellipse 100% 60% at 80% 0%, rgba(139,69,19,0.2) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(0,0,0,0.3) 0%, transparent 80%);
 }
 .login-bg::after {
   content: ''; position: absolute; inset: 0;
-  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  /* Industrial diamond-plate / cross-hatch pattern */
+  background-image:
+    linear-gradient(30deg, rgba(255,255,255,0.015) 12%, transparent 12.5%, transparent 87%, rgba(255,255,255,0.015) 87.5%),
+    linear-gradient(150deg, rgba(255,255,255,0.015) 12%, transparent 12.5%, transparent 87%, rgba(255,255,255,0.015) 87.5%),
+    linear-gradient(30deg, rgba(255,255,255,0.015) 12%, transparent 12.5%, transparent 87%, rgba(255,255,255,0.015) 87.5%),
+    linear-gradient(150deg, rgba(255,255,255,0.015) 12%, transparent 12.5%, transparent 87%, rgba(255,255,255,0.015) 87.5%),
+    linear-gradient(60deg, rgba(200,150,50,0.04) 25%, transparent 25.5%, transparent 75%, rgba(200,150,50,0.04) 75%),
+    linear-gradient(60deg, rgba(200,150,50,0.04) 25%, transparent 25.5%, transparent 75%, rgba(200,150,50,0.04) 75%);
+  background-size: 40px 70px;
+  background-position: 0 0, 0 0, 20px 35px, 20px 35px, 0 0, 20px 35px;
+}
+
+/* Floating tool silhouettes */
+.login-tools {
+  position: absolute; inset: 0; overflow: hidden; pointer-events: none;
+}
+.login-tools > div {
+  position: absolute;
+  opacity: 0.04;
+  color: #fff;
+  animation: float-tool 20s ease-in-out infinite;
+}
+@keyframes float-tool {
+  0%,100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-12px) rotate(3deg); }
+  75% { transform: translateY(8px) rotate(-2deg); }
 }
