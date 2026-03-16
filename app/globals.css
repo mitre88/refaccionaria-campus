@@ -4,7 +4,7 @@
   --color-accent: #c27115;
 }
 
-/* ─── Facebook-inspired Design System ─── */
+/* ─── Design System ─── */
 :root {
   --bg-0: #f0f2f5;
   --bg-1: #ffffff;
@@ -45,7 +45,6 @@
   --bubble-out-text: #ffffff;
   --notif-bg: #ffffff;
   --notif-border: #ced0d4;
-  --login-gradient: linear-gradient(135deg, #f6d365 0%, #c27115 50%, #8b4513 100%);
 }
 
 html.dark {
@@ -82,7 +81,6 @@ html.dark {
   --bubble-out-text: #000000;
   --notif-bg: #242526;
   --notif-border: #3e4042;
-  --login-gradient: linear-gradient(135deg, #2d1f00 0%, #4a2800 50%, #1a0f00 100%);
 }
 
 body {
@@ -101,12 +99,22 @@ body {
 @keyframes pulse-live { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
 @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
 @keyframes shake { 0%,100% { transform:translateX(0); } 20% { transform:translateX(-6px); } 40% { transform:translateX(6px); } 60% { transform:translateX(-3px); } 80% { transform:translateX(3px); } }
-@keyframes notif-in { from { opacity:0; transform:translateX(40px) scale(0.95); } to { opacity:1; transform:translateX(0) scale(1); } }
-@keyframes notif-out { from { opacity:1; transform:translateX(0); } to { opacity:0; transform:translateX(40px); } }
-@keyframes progress { from { width:100%; } to { width:0%; } }
 @keyframes toast-enter { from { opacity:0; transform:translateX(60px) scale(0.9); filter:blur(4px); } to { opacity:1; transform:translateX(0) scale(1); filter:blur(0); } }
 @keyframes toast-exit { from { opacity:1; transform:translateX(0) scale(1); } to { opacity:0; transform:translateX(80px) scale(0.85); filter:blur(2px); } }
 @keyframes toast-progress { from { width:100%; } to { width:0%; } }
+
+/* Magic UI keyframes */
+@keyframes shimmer-slide { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+@keyframes border-beam-spin { from { --border-beam-angle: 0; } to { --border-beam-angle: 360; } }
+@keyframes meteor-fall { 0% { transform: rotate(-30deg) translateX(0); opacity:0; } 10% { opacity:0.4; } 80% { opacity:0.4; } 100% { transform: rotate(-30deg) translateX(-600px); opacity:0; } }
+@keyframes ripple-expand { 0% { transform: translate(-50%,-50%) scale(0.8); opacity:0.08; } 100% { transform: translate(-50%,-50%) scale(1.4); opacity:0; } }
+@keyframes float-tool { 0%,100% { transform: translateY(0) rotate(0deg); } 25% { transform: translateY(-12px) rotate(3deg); } 75% { transform: translateY(8px) rotate(-2deg); } }
+
+@property --border-beam-angle {
+  syntax: "<number>";
+  initial-value: 0;
+  inherits: false;
+}
 
 .anim-enter { animation: enter 0.45s var(--ease) both; }
 .anim-enter-scale { animation: enter-scale 0.35s var(--ease) both; }
@@ -124,11 +132,12 @@ body {
 .stagger > *:nth-child(9) { animation-delay: 320ms; }
 .stagger > *:nth-child(10) { animation-delay: 360ms; }
 
-/* ─── Card (Facebook style) ─── */
+/* ─── Cards ─── */
 .fb-card {
   background: var(--bg-1);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
+  border: 1px solid var(--border-subtle);
   transition: all 0.3s var(--ease);
 }
 .fb-card-hover:hover {
@@ -146,13 +155,10 @@ body {
 }
 .btn:active { transform: scale(0.96); }
 .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-
 .btn-primary { background: var(--accent); color: #fff; }
 .btn-primary:hover { background: var(--accent-hover); box-shadow: var(--shadow-sm); }
-
 .btn-ghost { background: transparent; color: var(--text-2); }
 .btn-ghost:hover { background: var(--bg-hover); color: var(--text-0); }
-
 .btn-surface { background: var(--bg-2); color: var(--text-1); border-radius: var(--radius-full); }
 .btn-surface:hover { background: var(--bg-3); }
 
@@ -165,7 +171,7 @@ body {
 .input:focus { outline: none; box-shadow: 0 0 0 2px var(--accent); }
 .input::placeholder { color: var(--text-3); }
 
-/* ─── Bubbles (Facebook Messenger style) ─── */
+/* ─── Bubbles ─── */
 .bubble-in {
   background: var(--bubble-in); color: var(--bubble-in-text);
   border-radius: 18px 18px 4px 18px;
@@ -179,8 +185,8 @@ body {
 .header-blur {
   backdrop-filter: saturate(180%) blur(20px);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
-  background: color-mix(in srgb, var(--bg-1) 90%, transparent);
-  box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+  background: color-mix(in srgb, var(--bg-1) 85%, transparent);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .live-dot { width:10px; height:10px; border-radius:50%; background:var(--green); animation:pulse-live 2s ease-in-out infinite; }
@@ -189,45 +195,29 @@ body {
 .scroll-thin::-webkit-scrollbar-track { background:transparent; }
 .scroll-thin::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px; }
 
-/* ─── Login background — industrial/automotive ─── */
+/* ─── Login background ─── */
 .login-bg {
   position: fixed; inset: 0; z-index: 0;
-  background: #1a1a1a;
+  background: #0a0a0a;
   overflow: hidden;
 }
 .login-bg::before {
   content: ''; position: absolute; inset: 0;
   background:
-    radial-gradient(ellipse 120% 80% at 20% 100%, rgba(194,113,21,0.25) 0%, transparent 60%),
-    radial-gradient(ellipse 100% 60% at 80% 0%, rgba(139,69,19,0.2) 0%, transparent 50%),
-    radial-gradient(circle at 50% 50%, rgba(0,0,0,0.3) 0%, transparent 80%);
+    radial-gradient(ellipse 120% 80% at 20% 100%, rgba(194,113,21,0.2) 0%, transparent 60%),
+    radial-gradient(ellipse 100% 60% at 80% 0%, rgba(139,69,19,0.15) 0%, transparent 50%);
 }
 .login-bg::after {
   content: ''; position: absolute; inset: 0;
-  /* Industrial diamond-plate / cross-hatch pattern */
   background-image:
-    linear-gradient(30deg, rgba(255,255,255,0.015) 12%, transparent 12.5%, transparent 87%, rgba(255,255,255,0.015) 87.5%),
-    linear-gradient(150deg, rgba(255,255,255,0.015) 12%, transparent 12.5%, transparent 87%, rgba(255,255,255,0.015) 87.5%),
-    linear-gradient(30deg, rgba(255,255,255,0.015) 12%, transparent 12.5%, transparent 87%, rgba(255,255,255,0.015) 87.5%),
-    linear-gradient(150deg, rgba(255,255,255,0.015) 12%, transparent 12.5%, transparent 87%, rgba(255,255,255,0.015) 87.5%),
-    linear-gradient(60deg, rgba(200,150,50,0.04) 25%, transparent 25.5%, transparent 75%, rgba(200,150,50,0.04) 75%),
-    linear-gradient(60deg, rgba(200,150,50,0.04) 25%, transparent 25.5%, transparent 75%, rgba(200,150,50,0.04) 75%);
+    linear-gradient(30deg, rgba(255,255,255,0.012) 12%, transparent 12.5%, transparent 87%, rgba(255,255,255,0.012) 87.5%),
+    linear-gradient(150deg, rgba(255,255,255,0.012) 12%, transparent 12.5%, transparent 87%, rgba(255,255,255,0.012) 87.5%),
+    linear-gradient(60deg, rgba(200,150,50,0.03) 25%, transparent 25.5%, transparent 75%, rgba(200,150,50,0.03) 75%);
   background-size: 40px 70px;
-  background-position: 0 0, 0 0, 20px 35px, 20px 35px, 0 0, 20px 35px;
 }
-
-/* Floating tool silhouettes */
 .login-tools {
   position: absolute; inset: 0; overflow: hidden; pointer-events: none;
 }
 .login-tools > div {
-  position: absolute;
-  opacity: 0.04;
-  color: #fff;
-  animation: float-tool 20s ease-in-out infinite;
-}
-@keyframes float-tool {
-  0%,100% { transform: translateY(0) rotate(0deg); }
-  25% { transform: translateY(-12px) rotate(3deg); }
-  75% { transform: translateY(8px) rotate(-2deg); }
+  position: absolute; opacity: 0.035; color: #fff;
 }

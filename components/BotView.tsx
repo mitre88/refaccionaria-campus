@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback } from "react";
 import { ConversationView } from "./ConversationView";
 import { ThemeToggle } from "./ThemeToggle";
 import { showToast } from "./Toast";
+import { MagicCard } from "./magicui/magic-card";
+import { BlurFade } from "./magicui/blur-fade";
 
 interface Message {
   id: string;
@@ -150,53 +152,54 @@ export function BotView({
   );
 
   return (
-    <div style={{ minHeight: "100vh", background: "var(--bg-0)" }}>
+    <div className="min-h-screen" style={{ background: "var(--bg-0)" }}>
       {/* Header */}
-      <header className="header-blur" style={{ position: "sticky", top: 0, zIndex: 50 }}>
-        <div style={{ maxWidth: 700, margin: "0 auto", padding: "10px 20px", display: "flex", alignItems: "center", gap: 12 }}>
-          <button onClick={onBack} className="btn btn-ghost" style={{ width: 40, height: 40, borderRadius: "50%" }}>
+      <header className="header-blur sticky top-0 z-50">
+        <div className="mx-auto flex max-w-[700px] items-center gap-3 px-5 py-2.5">
+          <button onClick={onBack} className="btn btn-ghost flex h-10 w-10 items-center justify-center rounded-full">
             <svg width={20} height={20} fill="none" viewBox="0 0 24 24" stroke="var(--text-0)" strokeWidth={2.2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          {/* Bot avatar */}
-          <div style={{
-            width: 44, height: 44, borderRadius: 14,
-            background: "linear-gradient(135deg, var(--accent), var(--accent-hover))",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: 20, fontWeight: 800, color: "#fff",
-          }}>
+          <div
+            className="flex h-11 w-11 items-center justify-center rounded-[14px] text-xl font-extrabold text-white"
+            style={{ background: "linear-gradient(135deg, var(--accent), var(--accent-hover))" }}
+          >
             C
           </div>
-          <div style={{ flex: 1 }}>
-            <span style={{ fontSize: 18, fontWeight: 700, color: "var(--text-0)" }}>{botName}</span>
-            <p style={{ fontSize: 13, color: "var(--text-3)" }}>{contacts.length} conversaciones</p>
+          <div className="flex-1">
+            <span className="text-lg font-bold" style={{ color: "var(--text-0)" }}>{botName}</span>
+            <p className="text-[13px]" style={{ color: "var(--text-3)" }}>{contacts.length} conversaciones</p>
           </div>
           <ThemeToggle />
         </div>
       </header>
 
-      <main style={{ maxWidth: 700, margin: "0 auto", padding: "16px 20px 40px" }}>
+      <main className="mx-auto max-w-[700px] px-5 pb-10 pt-4">
         {/* Search */}
-        <div style={{ position: "relative", marginBottom: 16 }}>
-          <svg width={18} height={18} fill="none" viewBox="0 0 24 24" stroke="var(--text-3)" strokeWidth={1.8}
-            style={{ position: "absolute", left: 16, top: "50%", transform: "translateY(-50%)" }} />
-          <input
-            type="text" value={search} onChange={(e) => setSearch(e.target.value)}
-            className="input" placeholder="Buscar contacto o numero..."
-            style={{ paddingLeft: 44, borderRadius: "var(--radius-full)", background: "var(--bg-1)", border: "1px solid var(--border-subtle)" }}
-          />
-        </div>
+        <BlurFade delay={0}>
+          <div className="relative mb-4">
+            <svg width={18} height={18} fill="none" viewBox="0 0 24 24" stroke="var(--text-3)" strokeWidth={1.8}
+              className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+            </svg>
+            <input
+              type="text" value={search} onChange={(e) => setSearch(e.target.value)}
+              className="input" placeholder="Buscar contacto o numero..."
+              style={{ paddingLeft: 44, borderRadius: "var(--radius-full)", background: "var(--bg-1)", border: "1px solid var(--border-subtle)" }}
+            />
+          </div>
+        </BlurFade>
 
         {/* Loading */}
         {loading && (
-          <div className="stagger" style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+          <div className="flex flex-col gap-1">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} style={{ display: "flex", gap: 14, alignItems: "center", padding: "14px 16px" }}>
-                <div className="skeleton" style={{ width: 56, height: 56, borderRadius: "50%", flexShrink: 0 }} />
-                <div style={{ flex: 1 }}>
-                  <div className="skeleton" style={{ height: 16, width: "40%", marginBottom: 8 }} />
-                  <div className="skeleton" style={{ height: 14, width: "65%" }} />
+              <div key={i} className="flex items-center gap-4 p-4">
+                <div className="skeleton h-14 w-14 flex-shrink-0 rounded-full" />
+                <div className="flex-1">
+                  <div className="skeleton mb-2 h-4 w-[40%]" />
+                  <div className="skeleton h-3.5 w-[65%]" />
                 </div>
               </div>
             ))}
@@ -205,75 +208,75 @@ export function BotView({
 
         {/* Contacts */}
         {!loading && (
-          <div className="fb-card scroll-thin" style={{ overflow: "hidden" }}>
+          <div className="overflow-hidden rounded-xl border border-[var(--border-subtle)]" style={{ background: "var(--bg-1)" }}>
             {filtered.length === 0 && (
-              <div style={{ textAlign: "center", padding: "60px 20px" }}>
-                <svg width={48} height={48} fill="none" viewBox="0 0 24 24" stroke="var(--text-3)" strokeWidth={1} style={{ margin: "0 auto 14px" }}>
+              <div className="px-5 py-16 text-center">
+                <svg width={48} height={48} fill="none" viewBox="0 0 24 24" stroke="var(--text-3)" strokeWidth={1} className="mx-auto mb-4">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>
-                <p style={{ fontSize: 17, fontWeight: 600, color: "var(--text-1)" }}>
+                <p className="text-[17px] font-semibold" style={{ color: "var(--text-1)" }}>
                   {search ? "Sin resultados" : "Sin conversaciones"}
                 </p>
               </div>
             )}
 
-            <div className="stagger">
-              {filtered.map((c, i) => (
+            {filtered.map((c, i) => (
+              <BlurFade key={c.phone} delay={0.02 * i}>
                 <button
-                  key={c.phone}
                   onClick={() => setSelectedPhone(c.phone)}
+                  className="group flex w-full cursor-pointer items-center gap-4 px-5 py-4 text-left transition-colors duration-150 hover:bg-[var(--bg-hover)]"
                   style={{
-                    width: "100%", textAlign: "left",
-                    padding: "14px 20px",
-                    display: "flex", alignItems: "center", gap: 14,
-                    cursor: "pointer",
                     borderBottom: i < filtered.length - 1 ? "1px solid var(--border-subtle)" : "none",
-                    background: "transparent",
-                    transition: "background 0.15s",
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.background = "var(--bg-hover)")}
-                  onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
                 >
                   {/* Avatar */}
-                  <div style={{
-                    width: 56, height: 56, borderRadius: "50%", flexShrink: 0,
-                    background: getAvatarColor(c.phone),
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    fontSize: 22, fontWeight: 700, color: "#fff",
-                    boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
-                  }}>
+                  <div
+                    className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full text-[22px] font-bold text-white"
+                    style={{
+                      background: getAvatarColor(c.phone),
+                      boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
+                    }}
+                  >
                     {c.name.charAt(0).toUpperCase()}
                   </div>
 
                   {/* Content */}
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 3 }}>
-                      <span style={{ fontSize: 17, fontWeight: 600, color: "var(--text-0)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  <div className="min-w-0 flex-1">
+                    <div className="mb-1 flex items-baseline justify-between">
+                      <span className="truncate text-[17px] font-semibold" style={{ color: "var(--text-0)" }}>
                         {c.name}
                       </span>
-                      <span style={{ fontSize: 13, color: "var(--text-3)", flexShrink: 0, marginLeft: 8 }}>
+                      <span className="ml-2 flex-shrink-0 text-[13px]" style={{ color: "var(--text-3)" }}>
                         {timeAgo(c.lastTimestamp)}
                       </span>
                     </div>
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                      <span style={{ fontSize: 15, color: "var(--text-2)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    <div className="flex items-center justify-between">
+                      <span className="truncate text-[15px]" style={{ color: "var(--text-2)" }}>
                         {c.lastMessage || formatPhone(c.phone)}
                       </span>
-                      <span style={{
-                        fontSize: 12, fontWeight: 700, color: "#fff",
-                        background: "var(--accent)", borderRadius: 12,
-                        padding: "1px 8px", flexShrink: 0, marginLeft: 8, minWidth: 22, textAlign: "center",
-                      }}>
+                      <span
+                        className="ml-2 min-w-[22px] flex-shrink-0 rounded-full px-2 py-0.5 text-center text-[12px] font-bold text-white"
+                        style={{ background: "var(--accent)" }}
+                      >
                         {c.count}
                       </span>
                     </div>
-                    <span style={{ fontSize: 13, color: "var(--text-3)", fontFamily: "'SF Mono', monospace" }}>
+                    <span className="mt-0.5 block text-[13px] font-mono" style={{ color: "var(--text-3)" }}>
                       {formatPhone(c.phone)}
                     </span>
                   </div>
+
+                  {/* Arrow */}
+                  <svg
+                    width={16} height={16} fill="none" viewBox="0 0 24 24"
+                    stroke="var(--text-3)" strokeWidth={2}
+                    className="flex-shrink-0 opacity-0 transition-all duration-200 group-hover:translate-x-0.5 group-hover:opacity-100"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
                 </button>
-              ))}
-            </div>
+              </BlurFade>
+            ))}
           </div>
         )}
       </main>
